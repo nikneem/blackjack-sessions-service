@@ -53,6 +53,15 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
         };
     }
 
+    public async  Task<bool> GetIsSessionCodeUnique(Guid id, string code, CancellationToken ct = default)
+    {
+        var tableClient = _tableStorageClientFactory.CreateClient(TableName);
+        var pollsQuery = tableClient.QueryAsync<SessionTableEntity>($"{nameof(SessionTableEntity.PartitionKey)} eq '{PartitionKey}' and {nameof(SessionTableEntity.RowKey)} ne '{id}' and {nameof(SessionTableEntity.Code)} eq '{code}'", cancellationToken: ct);
+
+        var sessionsEnumeration = pollsQuery.GetAsyncEnumerator(ct);
+        return !await sessionsEnumeration.MoveNextAsync();
+    }
+
     public async Task<ISession> GetAsync(Guid id, CancellationToken ct = default)
     {
         var tableClient = _tableStorageClientFactory.CreateClient(TableName);

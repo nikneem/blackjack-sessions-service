@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\BlackJack.Sessions.Core.Abstractions\BlackJack.Sessions.Core.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

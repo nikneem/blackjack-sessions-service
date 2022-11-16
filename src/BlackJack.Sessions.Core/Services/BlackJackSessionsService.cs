@@ -39,7 +39,17 @@ public class BlackJackSessionsService: IBlackJackSessionsService
     public async Task<SessionDetailsDto> UpdateSessionAsync(Guid id, SessionDetailsDto dto, CancellationToken ct = default)
     {
         var session = await _repository.GetAsync(id, ct);
-        session.SetCode(dto.Code);
+        if (!string.IsNullOrWhiteSpace(dto.Code) && !Equals(session.Code, dto.Code))
+        {
+            if (await _repository.GetIsSessionCodeUnique(id, dto.Code, ct))
+            {
+                session.SetCode(dto.Code);
+            }
+            else
+            {
+                throw new BlackJackSessionCodeNotUniqueException(dto.Code);
+            }
+        }
         session.SetName(dto.Name);
         if (await _repository.PersistAsync(session, ct))
         {
