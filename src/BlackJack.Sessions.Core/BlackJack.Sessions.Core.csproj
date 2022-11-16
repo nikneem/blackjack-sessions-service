@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlackJack.Core" Version="1.0.1" />
+    <PackageReference Include="HexMaster.DomainDrivenDesign" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DomainModels\" />
+    <Folder Include="Services\" />
+    <Folder Include="Repositories\Entities\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlackJack.Sessions.Core.Abstractions\BlackJack.Sessions.Core.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
