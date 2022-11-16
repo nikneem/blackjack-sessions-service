@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="DomainModels\" />
+    <Folder Include="RepositoryTests\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
