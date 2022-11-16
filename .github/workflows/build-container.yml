@@ -52,7 +52,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: "50 80"
+          thresholds: "20 80"
 
   # build:
   #   runs-on: ubuntu-latest

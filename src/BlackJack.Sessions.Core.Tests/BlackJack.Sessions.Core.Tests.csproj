@@ -25,12 +25,13 @@
 
   <ItemGroup>
     <Folder Include="DomainModels\" />
-    <Folder Include="RepositoryTests\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BlackJack.Sessions.Core\BlackJack.Sessions.Core.csproj" />
   </ItemGroup>
-
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+	</ItemGroup>
 </Project>
