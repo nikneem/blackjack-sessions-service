@@ -6,8 +6,14 @@ namespace BlackJack.Sessions.Core.DomainModels;
 
 public class Session: DomainModel<Guid>, ISession
 {
+    public Guid OwnerId { get; private set; } = Guid.Empty;
     public string Name { get; private set; } = null!;
     public string Code { get; private set; }
+
+    public bool IsOwner(Guid userId)
+    {
+        return Equals(OwnerId, userId);
+    }
 
     public void SetName(string value)
     {
@@ -40,18 +46,20 @@ public class Session: DomainModel<Guid>, ISession
         return new string(stringChars);
     }
 
-    internal Session(Guid id, string name, string code) : base(id)
+    internal Session(Guid id, Guid ownerId, string name, string code) : base(id)
     {
+        OwnerId = ownerId;
         Name = name;
         Code = code;
     }
-    private Session() : base(Guid.NewGuid(), TrackingState.New)
+    private Session(Guid ownerId) : base(Guid.NewGuid(), TrackingState.New)
     {
+        OwnerId = ownerId;
         Code = GenerateCode();
     }
-    public static Session Create(string name)
+    public static Session Create(Guid ownerId, string name)
     {
-        var session = new Session();
+        var session = new Session(ownerId);
         session.SetName(name);
         return session;
     }

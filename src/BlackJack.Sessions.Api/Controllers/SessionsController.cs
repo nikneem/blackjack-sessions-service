@@ -12,22 +12,22 @@ namespace BlackJack.Sessions.Api.Controllers
         private readonly IBlackJackSessionsService _service;
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(string id, CancellationToken ct)
+        public async Task<IActionResult> GetAsync(string id, [FromQuery]Guid userId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
             
             if (Guid.TryParse(id, out Guid sessionId))
             {
-                var sessionById = await _service.GetSessionByIdAsync(sessionId, ct);
+                var sessionById = await _service.GetSessionByIdAsync(userId,sessionId, ct);
                 return Ok(sessionById);
             }
 
-            var sessionByCode = await _service.GetSessionByCodeAsync(id, ct);
+            var sessionByCode = await _service.GetSessionByCodeAsync(userId,id, ct);
             return Ok(sessionByCode);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(SessionCreateDto dto, CancellationToken ct)
+        public async Task<IActionResult> PostAsync(SessionCreateDto dto, [FromQuery] Guid userId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
             var sessionDto = await _service.CreateSessionAsync(dto, ct);
@@ -35,18 +35,18 @@ namespace BlackJack.Sessions.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(Guid id, SessionDetailsDto dto, CancellationToken ct)
+        public async Task<IActionResult> PutAsync(Guid id, [FromQuery] Guid userId, SessionDetailsDto dto, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            var sessionDto = await _service.UpdateSessionAsync(id, dto, ct);
+            var sessionDto = await _service.UpdateSessionAsync(userId, id, dto, ct);
             return Ok(sessionDto);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<SessionDetailsDto> dto, CancellationToken ct)
+        public async Task<IActionResult> PatchAsync(Guid id, [FromQuery] Guid userId, JsonPatchDocument<SessionDetailsDto> dto, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
-            var sessionDto = await _service.PatchSessionAsync(id, dto, ct);
+            var sessionDto = await _service.PatchSessionAsync(userId,id, dto, ct);
             return Ok(sessionDto);
         }
 

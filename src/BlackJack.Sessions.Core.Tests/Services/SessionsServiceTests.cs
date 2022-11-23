@@ -36,7 +36,7 @@ public class SessionsServiceTests
         var session = WithSessionInRepository();
         WithPersistenceSucceeding();
         var service = new BlackJackSessionsService(_repositoryMock.Object);
-        var result = await service.UpdateSessionAsync(session.Id, new SessionDetailsDto { Name = newName });
+        var result = await service.UpdateSessionAsync(session.OwnerId, session.Id, new SessionDetailsDto { Name = newName });
         _repositoryMock.Verify(x => x.PersistAsync(It.IsAny<Session>(), It.IsAny<CancellationToken>()), Times.Once);
         result.Name.Should().Be(newName);
     }
@@ -49,22 +49,31 @@ public class SessionsServiceTests
         WithUniqueSessionCode();
         WithPersistenceSucceeding();
         var service = new BlackJackSessionsService(_repositoryMock.Object);
-        var result = await service.UpdateSessionAsync(session.Id, new SessionDetailsDto { Name = newName, Code = newCode });
+        var result = await service.UpdateSessionAsync(session.OwnerId, session.Id, new SessionDetailsDto { Name = newName, Code = newCode });
         _repositoryMock.Verify(x => x.PersistAsync(It.IsAny<Session>(), It.IsAny<CancellationToken>()), Times.Once);
         result.Name.Should().Be(newName);
         result.Code.Should().Be(newCode);
     }
     [Fact]
-    public void WhenSessionCodeNotUnique_ItThrows()
+    public void WhenSessionCodeNotUnique_ItThrowsBlackJackSessionCodeNotUniqueException()
     {
         var newCode = "special";
         var session = WithSessionInRepository();
         WithPersistenceSucceeding();
         var service = new BlackJackSessionsService(_repositoryMock.Object);
-        var act = () => Task.FromResult(service.UpdateSessionAsync(session.Id, new SessionDetailsDto {Code = newCode}));
+        var act = () => Task.FromResult(service.UpdateSessionAsync(session.OwnerId, session.Id, new SessionDetailsDto {Code = newCode}));
         act.Should().ThrowAsync<BlackJackSessionCodeNotUniqueException>();
     }
-
+    [Fact]
+    public void WhenUserIsNotTheOwnerOfSession_ItThrowsBlackJackSessionNotAnOwnerException()
+    {
+        var newCode = "special";
+        var session = WithSessionInRepository();
+        WithPersistenceSucceeding();
+        var service = new BlackJackSessionsService(_repositoryMock.Object);
+        var act = () => Task.FromResult(service.UpdateSessionAsync(Guid.NewGuid(), session.Id, new SessionDetailsDto { Code = newCode }));
+        act.Should().ThrowAsync<BlackJackSessionNotAnOwnerException>();
+    }
 
     private void WithPersistenceSucceeding()
     {
@@ -78,7 +87,7 @@ public class SessionsServiceTests
     }
     private Session WithSessionInRepository()
     {
-        var session = new Session(Guid.NewGuid(), "Test", "Test");
+        var session = new Session(Guid.NewGuid(), Guid.NewGuid(), "Test", "Test");
         _repositoryMock.Setup(x => x.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(session);
         return session;

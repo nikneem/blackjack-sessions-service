@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using System.Security.Cryptography;
+using Azure;
 using Azure.Data.Tables;
 using BlackJack.Core.Factories;
 using BlackJack.Sessions.Core.Abstractions.DataTransferObjects;
@@ -18,7 +19,7 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
     private const string TableName = "sessions";
     private const string PartitionKey = "session";
 
-    public async Task<SessionDetailsDto> GetSessionByCodeAsync(string code, CancellationToken ct = default)
+    public async Task<SessionDetailsDto> GetSessionByCodeAsync(Guid userId, string code, CancellationToken ct = default)
     {
         var tableClient = _tableStorageClientFactory.CreateClient(TableName);
         var pollsQuery = tableClient.QueryAsync<SessionTableEntity>($"{nameof(SessionTableEntity.PartitionKey)} eq '{PartitionKey}' and {nameof(SessionTableEntity.Code)} eq '{code}'", cancellationToken: ct);
@@ -31,7 +32,9 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
             {
                 Id = Guid.Parse(entity.RowKey),
                 Code = entity.Code,
-                Name = entity.Name
+                Name = entity.Name,
+                IsOwner = Equals(entity.OwnerId, userId),
+
             }));
         }
         if (sessionsList.Count == 1)
@@ -41,7 +44,7 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
 
         throw new BlackJackSessionNotFoundException(code);
     }
-    public async Task<SessionDetailsDto> GetSessionByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<SessionDetailsDto> GetSessionByIdAsync(Guid userId, Guid id, CancellationToken ct = default)
     {
         var tableClient = _tableStorageClientFactory.CreateClient(TableName);
         var entity = await tableClient.GetEntityAsync<SessionTableEntity>(PartitionKey, id.ToString(), null, ct);
@@ -49,7 +52,8 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
         {
             Id = Guid.Parse(entity.Value.RowKey),
             Code = entity.Value.Code,
-            Name = entity.Value.Name
+            Name = entity.Value.Name,
+            IsOwner = Equals(entity.Value.OwnerId, userId),
         };
     }
 
@@ -62,12 +66,13 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
         return !await sessionsEnumeration.MoveNextAsync();
     }
 
-    public async Task<ISession> GetAsync(Guid id, CancellationToken ct = default)
+    public async Task<ISession> GetAsync( Guid id, CancellationToken ct = default)
     {
         var tableClient = _tableStorageClientFactory.CreateClient(TableName);
         var entity = await tableClient.GetEntityAsync<SessionTableEntity>(PartitionKey, id.ToString(), null, ct);
         return new Session(
             Guid.Parse(entity.Value.RowKey),
+            entity.Value.OwnerId,
             entity.Value.Name,
             entity.Value.Code);
     }
