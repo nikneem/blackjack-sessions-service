@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: pollstar-users-api
+  IMAGE_NAME: blackjack-sessions-api
 
 jobs:
   versionize:
