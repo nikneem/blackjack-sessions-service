@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "systemName": {
+      "value": "blckjck-sess"
+    },
+    "integrationSystemName": {
+      "value": "blckjck-int"
+    },
+    "environmentName": {
+      "value": "prod"
+    },
+    "locationAbbreviation": {
+      "value": "neu"
+    },
+    "containerRegistryResourceGroupName": {
+      "value": "Containers"
+    },
+    "containerRegistryResourceName": {
+      "value": "ekereg.azurecr.io"
+    },
+    "containerImageName": {
+      "value": "blackjack-sessions-api"
+    },
+    "containerExposedPort": {
+      "value": "80"
+    },
+    "daprApplicationId": {
+      "value": "blackjack-sessions-api"
+    },
+    "daprApplicationPort": {
+      "value": "7128"
+    },
+    "storageTables": {
+      "value": ["sessions"]
+    }
+  }
+}
