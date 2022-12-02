@@ -24,13 +24,13 @@
       "value": "blackjack-sessions-api"
     },
     "containerExposedPort": {
-      "value": "80"
+      "value": 80
     },
     "daprApplicationId": {
       "value": "blackjack-sessions-api"
     },
     "daprApplicationPort": {
-      "value": "7128"
+      "value": 7128
     },
     "storageTables": {
       "value": ["sessions"]

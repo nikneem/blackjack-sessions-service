@@ -44,6 +44,7 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
 
         throw new BlackJackSessionNotFoundException(code);
     }
+
     public async Task<SessionDetailsDto> GetSessionByIdAsync(Guid userId, Guid id, CancellationToken ct = default)
     {
         var tableClient = _tableStorageClientFactory.CreateClient(TableName);

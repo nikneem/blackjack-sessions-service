@@ -5,6 +5,7 @@ using BlackJack.Sessions.Core.Abstractions.Repositories;
 using BlackJack.Sessions.Core.Abstractions.Services;
 using BlackJack.Sessions.Core.DomainModels;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Globalization;
 
 namespace BlackJack.Sessions.Core.Services;
 
@@ -25,16 +26,25 @@ public class BlackJackSessionsService: IBlackJackSessionsService
 
     public async Task<SessionDetailsDto> CreateSessionAsync(SessionCreateDto dto, CancellationToken ct = default)
     {
-        var session = Session.Create(dto.UserId, dto.Name);
-        if (await _repository.PersistAsync(session, ct))
+        try
         {
-            return new SessionDetailsDto
+            var session = Session.Create(dto.UserId, dto.Name);
+            if (await _repository.PersistAsync(session, ct))
             {
-                Id = session.Id,
-                Name = session.Name,
-                Code = session.Code
-            };
+                return new SessionDetailsDto
+                {
+                    Id = session.Id,
+                    Name = session.Name,
+                    Code = session.Code,
+                    IsOwner = session.IsOwner(dto.UserId)
+                };
+            }
         }
+        catch (Exception ex)
+        {
+            throw new BlackJackSessionCreateException(ex);
+        }
+
         throw new BlackJackSessionCreateException();
     }
 

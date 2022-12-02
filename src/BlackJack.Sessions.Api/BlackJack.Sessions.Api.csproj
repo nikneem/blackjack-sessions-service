@@ -11,14 +11,17 @@
   <ItemGroup>
     <PackageReference Include="BlackJack.Core" Version="1.0.1" />
     <PackageReference Include="HexMaster.DomainDrivenDesign" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="5.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BlackJack.Sessions.Core.Abstractions\BlackJack.Sessions.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\BlackJack.Sessions.Core\BlackJack.Sessions.Core.csproj" />
   </ItemGroup>
 
 </Project>
