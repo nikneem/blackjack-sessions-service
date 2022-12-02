@@ -9,5 +9,5 @@ public abstract class BlackJackSessionsErrorCode : BlackJackErrorCode
     public static readonly BlackJackSessionsErrorCode CodeNotUnique = new BlackJackSessionCodeNotUniqueErrorCode();
     public static readonly BlackJackSessionsErrorCode NotAnOwner = new BlackJackSessionNotAnOwnerErrorCode();
 
-    public override string ErrorNamespace => "Sessions";
+    public override string ErrorNamespace => "Errors.Sessions";
 }

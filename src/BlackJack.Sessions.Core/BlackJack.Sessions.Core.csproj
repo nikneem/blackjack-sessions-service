@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BlackJack.Core" Version="1.0.1" />
+    <PackageReference Include="BlackJack.Core" Version="1.0.2" />
     <PackageReference Include="HexMaster.DomainDrivenDesign" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.0" />
   </ItemGroup>
