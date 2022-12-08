@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="BlackJack.Core" Version="1.0.3" />
-    <PackageReference Include="BlackJack.Events" Version="1.1.4" />
-    <PackageReference Include="BlackJack.Events.Abstractions" Version="1.1.4" />
+    <PackageReference Include="BlackJack.Events" Version="1.1.6" />
+    <PackageReference Include="BlackJack.Events.Abstractions" Version="1.1.6" />
     <PackageReference Include="HexMaster.DomainDrivenDesign" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.0" />
   </ItemGroup>

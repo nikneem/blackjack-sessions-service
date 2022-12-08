@@ -63,7 +63,7 @@ public class BlackJackSessionsService: IBlackJackSessionsService
         {
             var cloudEvent = BlackJackSessionCreatedEvent.Create(userId, sessionId);
             var sender = _eventsSenderFactory.CreateWithMsi();
-            _logger.LogInformation("Sending cloud event {event}", JsonConvert.SerializeObject(cloudEvent));
+            _logger.LogInformation("Sending EventGrid event {event}", JsonConvert.SerializeObject(cloudEvent));
             if (!await sender.SendEventAsync(cloudEvent))
             {
                 throw new Exception("Sending event failed");
