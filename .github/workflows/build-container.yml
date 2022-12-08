@@ -54,7 +54,7 @@ jobs:
           output: both
           thresholds: "20 80"
 
-  build:
+  build-container:
     runs-on: ubuntu-latest
     needs: versionize
     steps:
