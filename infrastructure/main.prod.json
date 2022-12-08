@@ -34,9 +34,6 @@
     },
     "storageTables": {
       "value": ["sessions"]
-    },
-    "serviceBusTopics": {
-      "value": ["table-created"]
     }
   }
 }
