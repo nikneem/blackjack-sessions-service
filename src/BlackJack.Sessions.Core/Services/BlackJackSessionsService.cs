@@ -5,7 +5,11 @@ using BlackJack.Sessions.Core.Abstractions.Repositories;
 using BlackJack.Sessions.Core.Abstractions.Services;
 using BlackJack.Sessions.Core.DomainModels;
 using Microsoft.AspNetCore.JsonPatch;
-using System.Globalization;
+using BlackJack.Core.Factories;
+using BlackJack.Events.Abstractions.Sender;
+using BlackJack.Events.Events;
+using BlackJack.Events.Events.Sessions;
+using Microsoft.Extensions.Logging;
 
 namespace BlackJack.Sessions.Core.Services;
 
@@ -13,6 +17,8 @@ public class BlackJackSessionsService: IBlackJackSessionsService
 
 {
     private readonly IBlackJackSessionsRepository _repository;
+    private readonly IEventGridSenderFactory _eventsSenderFactory;
+    private readonly ILogger<BlackJackSessionsService> _logger;
 
     public Task<SessionDetailsDto> GetSessionByCodeAsync(Guid userId, string code, CancellationToken ct = default)
     {
@@ -31,6 +37,7 @@ public class BlackJackSessionsService: IBlackJackSessionsService
             var session = Session.Create(dto.UserId, dto.Name);
             if (await _repository.PersistAsync(session, ct))
             {
+                await BroadcastEvent(dto.UserId, session.Id);
                 return new SessionDetailsDto
                 {
                     Id = session.Id,
@@ -39,6 +46,7 @@ public class BlackJackSessionsService: IBlackJackSessionsService
                     IsOwner = session.IsOwner(dto.UserId)
                 };
             }
+
         }
         catch (Exception ex)
         {
@@ -46,6 +54,25 @@ public class BlackJackSessionsService: IBlackJackSessionsService
         }
 
         throw new BlackJackSessionCreateException();
+    }
+
+    private async Task BroadcastEvent(Guid userId, Guid sessionId)
+    {
+        try
+        {
+            var cloudEvent = BlackJackSessionCreatedEvent.Create(userId, sessionId);
+            var sender = _eventsSenderFactory.CreateWithMsi();
+            if (!await sender.SendEventAsync(cloudEvent))
+            {
+                throw new Exception("Sending event failed");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to broadcast event");
+            throw;
+        }
+
     }
 
     public async Task<SessionDetailsDto> UpdateSessionAsync(Guid userId, Guid id, SessionDetailsDto dto, CancellationToken ct = default)
@@ -119,8 +146,13 @@ public class BlackJackSessionsService: IBlackJackSessionsService
         throw new BlackJackSessionCreateException();
     }
 
-    public BlackJackSessionsService(IBlackJackSessionsRepository repository)
+    public BlackJackSessionsService(
+        IBlackJackSessionsRepository repository, 
+        IEventGridSenderFactory eventsSenderFactory,
+        ILogger<BlackJackSessionsService> logger)
     {
         _repository = repository;
+        _eventsSenderFactory = eventsSenderFactory;
+        _logger = logger;
     }
 }

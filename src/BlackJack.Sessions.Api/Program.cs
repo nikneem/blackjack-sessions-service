@@ -3,6 +3,7 @@ using BlackJack.Core.Configuration;
 using BlackJack.Core.Exceptions;
 using BlackJack.Core.ExtensionMethods;
 using BlackJack.Core.HealthChecks;
+using BlackJack.Events.Configuration;
 using BlackJack.Sessions.Core;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -30,8 +31,9 @@ catch (Exception ex)
 }
 
 
-builder.Services.AddBlackJackCore(builder.Configuration);
-builder.Services.AddBlackJackSessions();
+builder.Services.AddBlackJackCore(builder.Configuration)
+    .AddBlackJackEvents()
+    .AddBlackJackSessions();
 
 builder.Services.AddCors(options =>
 {

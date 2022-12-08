@@ -17,25 +17,6 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2022-0
   scope: resourceGroup(integrationResourceGroupName)
 }
 
-resource containerAppIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
-  name: defaultResourceName
-  location: location
-}
-
-resource acrPullRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-  scope: resourceGroup()
-  name: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-}
-
-module acrPullRoleAssignment 'roleAssignment.bicep' = {
-  name: 'acrPullRoleAssignment'
-  scope: resourceGroup(containerRegistryResourceGroupName)
-  params: {
-    principalId: containerAppIdentity.properties.principalId
-    roleDefinitionId: acrPullRole.id
-  }
-}
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: uniqueString(defaultResourceName)
   location: location
@@ -72,52 +53,29 @@ var environmentVariables = [
   }
 ]
 
-// module azureContainerApp 'br/CoreModules:containerapp:0.1.9' = {
-//   name: 'ContainerAppModule'
-//   dependsOn: [
-//     roleAssignmentsModule
-//   ]
-//   params: {
-//     containerAppName: '${defaultResourceName}-aca'
-//     containerAppEnvironmentResourceGroupName: integrationResourceGroupName
-//     containerAppEnvironmentResourceName: containerAppEnvironmentResourceName
-//     containerName: containerName
-//     containerRegistryName: containerRegistryResourceName
-//     containerVersion: containerVersion
-//     enableDapr: true
-//     daprPort: containerPort
-//     enableHttpTrafficBasedScaling: true
-//     enableIngress: true
-//     userAssignedIdentityId: containerAppIdentity.id
-//     environmentVariables: environmentVariables
-//   }
-// }
 module containerAppModuleModule 'containerapp.bicep' = {
   name: 'ContainerAppModuleModule'
-  dependsOn: [
-    acrPullRoleAssignment
-  ]
   params: {
     containerAppName: '${defaultResourceName}-aca'
     location: location
     containerAppEnvironmentResourceGroupName: integrationResourceGroupName
     containerAppEnvironmentResourceName: containerAppEnvironmentResourceName
     containerName: containerName
-    containerRegistryName: containerRegistryResourceName
+    containerRegistryResourceName: containerRegistryResourceName
+    containerRegistryResourceGroupName: containerRegistryResourceGroupName
     containerVersion: containerVersion
     enableDapr: true
     daprPort: containerPort
     enableHttpTrafficBasedScaling: true
     enableIngress: true
-    userAssignedIdentityId: containerAppIdentity.id
     environmentVariables: environmentVariables
   }
 }
 
-// module roleAssignmentsModule 'all-role-assignments.bicep' = {
-//   name: 'roleAssignmentsModule'
-//   params: {
-//     containerAppPrincipalId: containerAppModuleModule.outputs.principalId
-//     integrationResourceGroupName: integrationResourceGroupName
-//   }
-// }
+module roleAssignmentsModule 'role-assignments.bicep' = {
+  name: 'roleAssignmentsModule'
+  params: {
+    containerAppPrincipalId: containerAppModuleModule.outputs.principalId
+    integrationResourceGroupName: integrationResourceGroupName
+  }
+}

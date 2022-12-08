@@ -3,9 +3,7 @@ param location string = resourceGroup().location
 
 param enableIngress bool
 param ingressTargetPort int = 80
-param userAssignedIdentityId string
 
-param containerRegistryName string
 param containerName string
 param containerVersion string
 param containerResources object = {
@@ -18,10 +16,13 @@ param enableDapr bool
 param daprAppName string = containerName
 param daprPort int = ingressTargetPort
 
+param containerRegistryResourceName string
+param containerRegistryResourceGroupName string
+
 param containerAppEnvironmentResourceName string
 param containerAppEnvironmentResourceGroupName string
 
-param minimumReplicas int = 1
+param minimumReplicas int = 0
 param maximumReplicas int = 6
 
 param enableHttpTrafficBasedScaling bool
@@ -61,14 +62,16 @@ resource containerAppEnvironments 'Microsoft.App/managedEnvironments@2022-03-01'
   scope: resourceGroup(containerAppEnvironmentResourceGroupName)
 }
 
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' existing = {
+  name: containerRegistryResourceName
+  scope: resourceGroup(containerRegistryResourceGroupName)
+}
+
 resource apiContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: location
   identity: {
-    type: 'SystemAssigned,UserAssigned'
-    userAssignedIdentities: {
-      '${userAssignedIdentityId}': {}
-    }
+    type: 'SystemAssigned'
   }
   properties: {
     managedEnvironmentId: containerAppEnvironments.id
@@ -77,17 +80,24 @@ resource apiContainerApp 'Microsoft.App/containerApps@2022-03-01' = {
       activeRevisionsMode: 'Single'
       ingress: ingress
       dapr: dapr
+      secrets: [
+        {
+          name: 'container-registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
+      ]
       registries: [
         {
-          server: containerRegistryName
-          identity: userAssignedIdentityId
+          server: containerRegistry.properties.loginServer
+          username: containerRegistry.name
+          passwordSecretRef: 'container-registry-password'
         }
       ]
     }
     template: {
       containers: [
         {
-          image: '${containerRegistryName}/${containerName}:${containerVersion}'
+          image: '${containerRegistry.properties.loginServer}/${containerName}:${containerVersion}'
           name: containerName
           resources: containerResources
           env: environmentVariables
