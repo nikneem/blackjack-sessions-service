@@ -20,7 +20,7 @@ resource configurationDataReaderRole 'Microsoft.Authorization/roleDefinitions@20
 }
 module configurationReaderRoleAssignment 'br/BicepModules:authorization/roleassignments:0.1.10' = {
   name: 'configurationReaderRoleAssignmentModule'
-  scope: resourceGroup()
+  scope: resourceGroup(integrationResourceGroupName)
   params: {
     principalId: containerAppPrincipalId
     roleDefinitionId: configurationDataReaderRole.id
