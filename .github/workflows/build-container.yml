@@ -112,5 +112,5 @@ jobs:
           scope: subscription
           region: northeurope
           template: main.json
-          parameters: main.prod.json containerImageVersion=${{needs.versionize.outputs.semver}}
-          deploymentName: BlackJackProd
+          parameters: main.prod.json containerImageName=${{ env.IMAGE_NAME }} containerImageVersion=${{needs.versionize.outputs.semver}}
+          deploymentName: BlackJackSessionsProd
