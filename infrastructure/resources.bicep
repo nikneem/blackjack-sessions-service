@@ -48,8 +48,8 @@ var environmentVariables = [
     value: storageAccount.name
   }
   {
-    name: 'FUNCTIONS_WORKER_RUNTIME'
-    value: 'dotnet-isolated'
+    name: 'AllowedCorsOrigins'
+    value: 'http://localhost:4200;https://blackjack.hexmaster.nl'
   }
 ]
 

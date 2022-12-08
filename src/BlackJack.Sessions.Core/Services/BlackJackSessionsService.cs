@@ -10,6 +10,7 @@ using BlackJack.Events.Abstractions.Sender;
 using BlackJack.Events.Events;
 using BlackJack.Events.Events.Sessions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace BlackJack.Sessions.Core.Services;
 
@@ -62,6 +63,7 @@ public class BlackJackSessionsService: IBlackJackSessionsService
         {
             var cloudEvent = BlackJackSessionCreatedEvent.Create(userId, sessionId);
             var sender = _eventsSenderFactory.CreateWithMsi();
+            _logger.LogInformation("Sending cloud event {event}", JsonConvert.SerializeObject(cloudEvent));
             if (!await sender.SendEventAsync(cloudEvent))
             {
                 throw new Exception("Sending event failed");

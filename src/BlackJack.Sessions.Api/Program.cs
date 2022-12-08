@@ -35,15 +35,13 @@ builder.Services.AddBlackJackCore(builder.Configuration)
     .AddBlackJackEvents()
     .AddBlackJackSessions();
 
+var allowedCorsOrigins = builder.Configuration.GetRequiredValue("AllowedCorsOrigins");
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: defaultCorsPolicyName,
         bldr =>
         {
-            bldr.WithOrigins("http://localhost:4200",
-                    "https://pollstar-dev.hexmaster.nl",
-                    "https://pollstar-test.hexmaster.nl",
-                    "https://pollstar.hexmaster.nl")
+            bldr.WithOrigins(allowedCorsOrigins.Split(';'))
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -69,13 +67,10 @@ app.UseCors(defaultCorsPolicyName);
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
-app.UseEndpoints(ep =>
+app.MapHealthChecks("/health", new HealthCheckOptions
 {
-    ep.MapHealthChecks("/health", new HealthCheckOptions
-    {
-        ResponseWriter = HealthCheckExtensions.WriteResponse
-    });
-    ep.MapControllers();
+    ResponseWriter = HealthCheckExtensions.WriteResponse
 });
+app.MapControllers();
 
 app.Run();
