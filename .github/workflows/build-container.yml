@@ -94,25 +94,23 @@ jobs:
           name: bicep-templates
           path: infrastructure/*.json
 
-  # infrastructure-incremental-test:
-  #   needs: [build, publish-bicep, versionize]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: bicep-templates
-  #         path: ./infrastructure
-  #     - name: Azure Login
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_PROD }}
-  #     - name: Deploy Infrastructure
-  #       id: arm
-  #       uses: Azure/cli@v1
-  #       with:
-  #         inlineScript: az deployment sub create --name $IMAGE_NAME  --location northeurope --template-file ./infrastructure/main.json --parameters ./infrastructure/params.prod.json --parameters containerVersion=${{needs.versionize.outputs.semver}}
+  deploy-infrastructure-prod:
+    runs-on: ubuntu-latest
+    needs: [versionize, publish-bicep, build-container]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: bicep-templates
+      - uses: azure/login@v1
+        name: Azure Login
+        with:
+          creds: ${{secrets.AZURE_PROD}}
+      - uses: azure/arm-deploy@v1
+        id: armdeployprod
+        name: Deploy infrastructure
+        with:
+          scope: subscription
+          region: northeurope
+          template: main.json
+          parameters: main.prod.json containerVersion=${{needs.versionize.outputs.semver}}
+          deploymentName: BlackJackProd
