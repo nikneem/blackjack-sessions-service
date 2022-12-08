@@ -20,7 +20,7 @@ try
 {
     builder.Configuration.AddAzureAppConfiguration(options =>
     {
-        options.Connect(new Uri(builder.Configuration.GetRequiredValue("Azure:AzureAppConfiguration")), azureCredential)
+        options.Connect(new Uri(builder.Configuration.GetRequiredValue("Azure:AppConfiguration")), azureCredential)
             .ConfigureKeyVault(kv => kv.SetCredential(azureCredential))
             .UseFeatureFlags();
     });

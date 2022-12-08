@@ -36,7 +36,7 @@ resource storageAccountTable 'Microsoft.Storage/storageAccounts/tableServices/ta
 
 var environmentVariables = [
   {
-    name: 'AzureAppConfiguration'
+    name: 'Azure__AppConfiguration'
     value: appConfiguration.properties.endpoint
   }
   {
@@ -44,8 +44,8 @@ var environmentVariables = [
     value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
   }
   {
-    name: 'StorageAccountName'
-    value: 'https://${storageAccount.name}.table.${environment().suffixes.storage}'
+    name: 'Azure__StorageAccount'
+    value: storageAccount.name
   }
   {
     name: 'FUNCTIONS_WORKER_RUNTIME'
