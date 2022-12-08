@@ -18,7 +18,7 @@
       "value": "Containers"
     },
     "containerRegistryResourceName": {
-      "value": "ekereg.azurecr.io"
+      "value": "ekereg"
     },
     "containerImageName": {
       "value": "blackjack-sessions-api"
