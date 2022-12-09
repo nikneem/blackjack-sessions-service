@@ -1,6 +1,7 @@
 ﻿using BlackJack.Events.Abstractions.Events;
 using BlackJack.Events.Abstractions.Sender;
 using BlackJack.Events.EventData;
+using BlackJack.Events.Sessions.EventData;
 using BlackJack.Sessions.Core.Abstractions.DataTransferObjects;
 using BlackJack.Sessions.Core.Abstractions.Exceptions;
 using BlackJack.Sessions.Core.Abstractions.Repositories;
@@ -86,7 +87,7 @@ public class SessionsServiceTests
     {
         _eventGridMock.Setup(x => x.SendEventAsync(It.IsAny<IBlackJackEvent>()))
             .ReturnsAsync(true);
-        _eventGridMock.Setup(x => x.SendEventAsync(It.IsAny<IBlackJackEvent<TableCreatedEventData>>()))
+        _eventGridMock.Setup(x => x.SendEventAsync(It.IsAny<IBlackJackEvent<BlackJackSessionCreatedEventData>>()))
             .ReturnsAsync(true);
         _eventGridFactoryMock.Setup(x => x.CreateWithMsi(It.IsAny<string>()))
             .Returns(_eventGridMock.Object);

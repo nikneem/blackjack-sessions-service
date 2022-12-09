@@ -1,14 +1,11 @@
-﻿using Azure;
-using BlackJack.Sessions.Core.Abstractions.DataTransferObjects;
+﻿using BlackJack.Sessions.Core.Abstractions.DataTransferObjects;
 using BlackJack.Sessions.Core.Abstractions.Exceptions;
 using BlackJack.Sessions.Core.Abstractions.Repositories;
 using BlackJack.Sessions.Core.Abstractions.Services;
 using BlackJack.Sessions.Core.DomainModels;
 using Microsoft.AspNetCore.JsonPatch;
-using BlackJack.Core.Factories;
 using BlackJack.Events.Abstractions.Sender;
-using BlackJack.Events.Events;
-using BlackJack.Events.Events.Sessions;
+using BlackJack.Events.Sessions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
