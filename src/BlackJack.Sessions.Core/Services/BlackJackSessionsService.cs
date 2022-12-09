@@ -58,17 +58,16 @@ public class BlackJackSessionsService: IBlackJackSessionsService
     {
         try
         {
-            var cloudEvent = BlackJackSessionCreatedEvent.Create(userId, sessionId);
-            var sender = _eventsSenderFactory.CreateWithMsi();
-            _logger.LogInformation("Sending EventGrid event {event}", JsonConvert.SerializeObject(cloudEvent));
-            if (!await sender.SendEventAsync(cloudEvent))
+            var blackJackEvent = BlackJackSessionCreatedEvent.Create(userId, sessionId);
+            var eventGridSender = _eventsSenderFactory.CreateWithMsi();
+            if (!await eventGridSender.SendEventAsync(blackJackEvent))
             {
-                throw new Exception("Sending event failed");
+                throw new Exception("Publishing the event failed");
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to broadcast event");
+            _logger.LogError(ex, "Failed to publish event to EventGrid");
             throw;
         }
 
