@@ -89,6 +89,7 @@ public class BlackJackSessionsRepository: IBlackJackSessionsRepository
                 RowKey = session.Id.ToString(),
                 Name = session.Name,
                 Code = session.Code,
+                OwnerId = session.OwnerId,
                 ETag = ETag.All,
                 Timestamp = DateTimeOffset.UtcNow
             };
